@@ -5,7 +5,7 @@ Thank you for your interest in this research! This is an academic project prepar
 ## How You Can Contribute
 
 ### 1. **Report Issues or Suggest Improvements**
-- Found a bug? [Open an issue](https://github.com/PeytonAllworth/productive-liquidity-thesis/issues)
+- Found a bug? [Open an issue](https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin/issues)
 - Have suggestions for additional metrics? Open an issue with the `enhancement` label
 - Spotted errors in calculations? Please report them!
 
@@ -76,14 +76,14 @@ If you extend this work, build upon the framework, or use significant portions o
   journal={Ledger},
   year={2025},
   note={Preprint},
-  url={https://github.com/PeytonAllworth/productive-liquidity-thesis}
+  url={https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin}
 }
 ```
 
 ### For Code Attribution:
 ```python
 # Based on Bitcoin Liquidity Crisis Research by Peyton Allworth
-# https://github.com/PeytonAllworth/productive-liquidity-thesis
+# https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin
 # Licensed under MIT License
 ```
 
@@ -114,7 +114,7 @@ See [README.md](README.md) for full details.
 1. **Fork the repository**
    ```bash
    # Click "Fork" on GitHub, then:
-   git clone https://github.com/YOUR_USERNAME/productive-liquidity-thesis.git
+   git clone https://github.com/YOUR_USERNAME/productive-liquidity-thesis-bitcoin.git
    ```
 
 2. **Create a feature branch**

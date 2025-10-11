@@ -255,14 +255,14 @@ If you use this research or code, please cite:
   journal={Ledger},
   year={2025},
   note={Preprint},
-  url={https://github.com/PeytonAllworth/productive-liquidity-thesis}
+  url={https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin}
 }
 ```
 
 **For the code specifically:**
 ```
 Allworth, P. (2025). Bitcoin Liquidity Crisis Research [Software]. 
-Available at: https://github.com/PeytonAllworth/productive-liquidity-thesis
+Available at: https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin
 Licensed under MIT License.
 ```
 
@@ -274,7 +274,7 @@ For questions, collaboration, or data sharing:
 **Email:** peytonallworth0001@gmail.com  
 **LinkedIn:** https://www.linkedin.com/in/peytonallworth/  
 **GitHub:** https://github.com/PeytonAllworth  
-**Issues:** https://github.com/PeytonAllworth/productive-liquidity-thesis/issues
+**Issues:** https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin/issues
 
 ---
 
@@ -294,7 +294,7 @@ The ideas, analysis, and theoretical framework (the "productive liquid asset" th
 - **Pre-publication citation:**
   ```
   Allworth, P. (2025). Reimagining Keynesian Economics: Bitcoin as a Productive, 
-  Liquid Asset in Economic Crises. Preprint. https://github.com/PeytonAllworth/productive-liquidity-thesis
+  Liquid Asset in Economic Crises. Preprint. https://github.com/PeytonAllworth/productive-liquidity-thesis-bitcoin
   ```
 
 **Why separate licenses?**
