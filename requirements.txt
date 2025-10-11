@@ -1,0 +1,19 @@
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Plotting
+matplotlib>=3.7.0
+
+# HTTP requests for APIs
+requests>=2.31.0
+
+# Configuration
+pyyaml>=6.0
+
+# Bitcoin Core RPC (optional, for node users)
+python-bitcoinrpc>=1.0
+
+# Testing (optional)
+pytest>=7.4.0
+

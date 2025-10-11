@@ -1,0 +1,63 @@
+# Example configuration file for Bitcoin liquidity crisis research
+# Copy this file to settings.yaml and edit with your values
+# settings.yaml is gitignored to protect credentials
+
+# Bitcoin Core RPC connection (OPTIONAL - only if you run your own node)
+# Requires: txindex=1, server=1 in bitcoin.conf
+rpc:
+  host: "http://127.0.0.1"
+  port: 8332
+  user: "bitcoinrpc"
+  password: "changeme"  # CHANGE THIS if using RPC
+  timeout: 300  # seconds
+
+# API endpoints for public data sources
+apis:
+  mempool_space_base: "https://mempool.space/api"
+  blockchain_com_base: "https://api.blockchain.info"
+  # Add more as needed
+
+# Data output paths (relative to project root)
+data:
+  out_raw: "data/raw"
+  out_processed: "data/processed"
+  out_figures: "data/figures"
+
+# Event anchor dates (YYYY-MM-DD format)
+# These define the center point of each crisis window
+events:
+  # Cyprus banking crisis - capital controls, bank runs
+  cyprus_2013: "2013-03-16"
+  
+  # Venezuela hyperinflation - currency collapse, LocalBitcoins surge
+  venezuela_2017: "2017-01-01"
+  
+  # COVID/CPI peak - June 2022 inflation peak (9.1% US CPI)
+  covid_cpi_peak_2022: "2022-06-01"
+  
+  # Placeholder for future events:
+  # svb_collapse_2023: "2023-03-10"
+  # greek_crisis_2015: "2015-06-29"
+
+# Event window configuration
+windows:
+  days_before: 90   # Pre-crisis period (days before anchor)
+  days_after: 90    # Crisis period (days after and including anchor)
+  
+# Plotting preferences
+plotting:
+  dpi: 300
+  figsize_width: 12
+  figsize_height: 8
+  style: "default"  # matplotlib style
+  save_format: "png"  # or "svg" for vector graphics
+
+# Data processing options
+processing:
+  rolling_window_days: 30  # For moving averages
+  remove_outliers: false   # Conservative approach: keep all data
+  
+# Statistical thresholds
+stats:
+  percentiles: [50, 90]  # median (p50) and p90 for urgency spread
+
