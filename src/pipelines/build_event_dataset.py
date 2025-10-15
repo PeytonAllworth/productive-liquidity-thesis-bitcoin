@@ -38,59 +38,45 @@ def load_all_metrics(processed_dir: Path) -> Dict[str, pd.DataFrame]:
         Dictionary {metric_name: dataframe}
     
     Expected CSVs:
-        - fee_rate_urgency_daily.csv
-        - fees_per_block_btc.csv
+        - fee_rate_urgency_estimated.csv
         - fee_to_subsidy_daily.csv
         - dormancy_bdd_daily.csv
         - tx_activity_daily.csv
-        - mempool_backlog_daily.csv (optional)
     
     Example:
         >>> metrics = load_all_metrics(Path('data/processed'))
         >>> print(metrics.keys())
-        dict_keys(['fee_rate_urgency', 'fees_per_block', ...])
-    
-    TODO: Implement after metric computation is complete
+        dict_keys(['fee_rate_urgency', 'fee_to_subsidy', 'dormancy', 'tx_activity'])
     """
     print("\n📂 Loading all computed metrics...")
     
     metrics = {}
     
-    # TODO: Add file loading logic
-    # 
-    # # Fee rate & urgency
-    # csv_path = processed_dir / "fee_rate_urgency_daily.csv"
-    # if csv_path.exists():
-    #     metrics['fee_rate_urgency'] = load_csv(csv_path)
-    # 
-    # # Fees per block
-    # csv_path = processed_dir / "fees_per_block_btc.csv"
-    # if csv_path.exists():
-    #     metrics['fees_per_block'] = load_csv(csv_path)
-    # 
-    # # Fee-to-subsidy
-    # csv_path = processed_dir / "fee_to_subsidy_daily.csv"
-    # if csv_path.exists():
-    #     metrics['fee_to_subsidy'] = load_csv(csv_path)
-    # 
-    # # Dormancy (BDD)
-    # csv_path = processed_dir / "dormancy_bdd_daily.csv"
-    # if csv_path.exists():
-    #     metrics['dormancy'] = load_csv(csv_path)
-    # 
-    # # Transaction activity
-    # csv_path = processed_dir / "tx_activity_daily.csv"
-    # if csv_path.exists():
-    #     metrics['tx_activity'] = load_csv(csv_path)
-    # 
-    # # Mempool (optional)
-    # csv_path = processed_dir / "mempool_backlog_daily.csv"
-    # if csv_path.exists():
-    #     metrics['mempool'] = load_csv(csv_path)
-    # 
-    # print(f"   ✓ Loaded {len(metrics)} metric datasets")
+    # Fee rate & urgency
+    csv_path = processed_dir / "fee_rate_urgency_estimated.csv"
+    if csv_path.exists():
+        metrics['fee_rate_urgency'] = load_csv(csv_path)
+        print(f"   ✓ Loaded fee rate metrics: {len(metrics['fee_rate_urgency'])} rows")
     
-    print("   ⚠️  Not implemented yet - waiting for metric computation\n")
+    # Fee-to-subsidy
+    csv_path = processed_dir / "fee_to_subsidy_daily.csv"
+    if csv_path.exists():
+        metrics['fee_to_subsidy'] = load_csv(csv_path)
+        print(f"   ✓ Loaded fee-to-subsidy: {len(metrics['fee_to_subsidy'])} rows")
+    
+    # Dormancy (BDD)
+    csv_path = processed_dir / "dormancy_bdd_daily.csv"
+    if csv_path.exists():
+        metrics['dormancy'] = load_csv(csv_path)
+        print(f"   ✓ Loaded BDD metrics: {len(metrics['dormancy'])} rows")
+    
+    # Transaction activity
+    csv_path = processed_dir / "tx_activity_daily.csv"
+    if csv_path.exists():
+        metrics['tx_activity'] = load_csv(csv_path)
+        print(f"   ✓ Loaded transaction activity: {len(metrics['tx_activity'])} rows")
+    
+    print(f"   ✓ Loaded {len(metrics)} metric datasets\n")
     
     return metrics
 
@@ -113,31 +99,28 @@ def merge_metrics_on_date(metrics_dict: Dict[str, pd.DataFrame]) -> pd.DataFrame
         >>> merged = merge_metrics_on_date(metrics)
         >>> print(merged.columns)
         Index(['date', 'median_sat_vb', 'fees_per_block_btc', 'bdd', ...])
-    
-    TODO: Implement
     """
     if not metrics_dict:
         print("   ❌ No metrics to merge")
         return pd.DataFrame()
     
-    # TODO: Implement merging logic
-    # 
-    # # Start with first dataframe
-    # merged = list(metrics_dict.values())[0].copy()
-    # 
-    # # Merge remaining dataframes
-    # for name, df in list(metrics_dict.items())[1:]:
-    #     merged = merged.merge(df, on='date', how='inner', suffixes=('', f'_{name}'))
-    # 
-    # # Sort by date
-    # merged = merged.sort_values('date').reset_index(drop=True)
-    # 
-    # print(f"   ✓ Merged metrics: {len(merged)} days, {len(merged.columns)} columns")
-    # 
-    # return merged
+    # Start with first dataframe
+    merged = list(metrics_dict.values())[0].copy()
     
-    print("   ⚠️  Merge not implemented yet\n")
-    return pd.DataFrame()
+    # Merge remaining dataframes
+    for name, df in list(metrics_dict.items())[1:]:
+        # Use outer join to keep all dates, then forward fill missing values
+        merged = merged.merge(df, on='date', how='outer', suffixes=('', f'_{name}'))
+    
+    # Sort by date
+    merged = merged.sort_values('date').reset_index(drop=True)
+    
+    # Forward fill missing values
+    merged = merged.fillna(method='ffill')
+    
+    print(f"   ✓ Merged metrics: {len(merged)} days, {len(merged.columns)} columns")
+    
+    return merged
 
 
 def build_event_dataset(

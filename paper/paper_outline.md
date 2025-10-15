@@ -23,7 +23,7 @@ This work is intended for publication in Ledger journal, which timestamps public
 - Central assumption: money is inherently unproductive
 - Bitcoin challenges this framework: it is the most liquid asset (no capital controls at base layer) BUT is productive (PoW → miner revenue → energy/infrastructure investment)
 - Research question: Do economic crises trigger measurable liquidity-preference behavior on Bitcoin's base layer, and does this behavior increase miner revenue?
-- Method: Event study analysis of three crises (Cyprus 2013, Venezuela 2017-18, COVID/CPI 2022) using BTC-native metrics (fee rates, fee-to-subsidy ratio, dormancy, activity)
+- Method: Event study analysis of three crises (Cyprus 2013, Venezuela 2016-17, COVID lockdown 2020) using BTC-native metrics (fee rates, fee-to-subsidy ratio, dormancy, activity)
 - Findings: [TO BE COMPLETED AFTER ANALYSIS]
 - Implications: Bitcoin's fee market creates counter-cyclical economic forces during crises without monetary expansion—critical because Bitcoin adoption threatens nations' ability to expand money supply
 
@@ -150,26 +150,31 @@ This work is intended for publication in Ledger journal, which timestamps public
 **Selected Crises:**
 1. **Cyprus Banking Crisis (March 2013)**
    - Anchor date: 2013-03-16 (bank run, capital controls imposed)
-   - Window: ±90 days (Dec 16, 2012 – Jun 14, 2013)
+   - Window 1: ±90 days (Dec 16, 2012 – Jun 14, 2013)
+   - Window 2: 180/45 days (Sep 18, 2012 – May 1, 2013)
    
-2. **Venezuela Hyperinflation (2017-2018)**
-   - Anchor date: 2017-01-01 (currency collapse intensifies)
-   - Window: ±90 days (Oct 3, 2016 – Apr 1, 2017)
+2. **Venezuela Hyperinflation (2016-2017)**
+   - Anchor date: 2016-11-13 (Hanke's daily-IMF methodology: first breach of 50%-per-month hyperinflation threshold)
+   - Window 1: ±90 days (Aug 15, 2016 – Feb 10, 2017)
+   - Window 2: 180/45 days (May 17, 2016 – Dec 28, 2016)
    
-3. **COVID/CPI Peak (June 2022)**
-   - Anchor date: 2022-06-01 (US CPI peaks at 9.1%, macro uncertainty)
-   - Window: ±90 days (Mar 3, 2022 – Aug 30, 2022)
+3. **COVID Lockdown (March 2020)**
+   - Anchor date: 2020-03-19 (California stay-at-home order, US lockdown begins)
+   - Window 1: ±90 days (Dec 20, 2019 – Jun 17, 2020)
+   - Window 2: 180/45 days (Sep 21, 2019 – May 3, 2020)
 
 **Window Rationale:**
-- 90 days pre-crisis: Establishes baseline behavior
-- 90 days post-crisis: Captures immediate response + sustained effects
+- **90/90 days:** Standard event study window, captures immediate response + sustained effects
+- **180/45 days:** Extended pre-crisis period establishes robust baseline "normalcy," shorter post-crisis period isolates immediate impact
+- Dual approach provides comprehensive view: longer baseline vs. immediate response
 - Avoids overlap with other major events (halvings, regulatory news)
 
 ### 4.4 Statistical Approach
-- **Descriptive statistics:** Mean, median, std dev for pre vs. crisis periods
+- **Dual window analysis:** Results reported for both 90/90 and 180/45 day configurations
+- **Descriptive statistics:** Mean, median, std dev for pre vs. crisis periods (both windows)
 - **Percent change:** ((crisis_mean - pre_mean) / pre_mean) × 100
 - **Rolling averages:** 30-day MA for smoothing
-- **Visualization:** Time series with shaded event windows
+- **Visualization:** Time series with shaded event windows (both configurations)
 
 **Limitations (acknowledged upfront):**
 - **Descriptive, not causal:** We observe correlations, not mechanisms
@@ -184,41 +189,67 @@ This work is intended for publication in Ledger journal, which timestamps public
 ### 5.1 Cyprus Crisis (2013)
 **Context:** Bank runs, capital controls, Bitcoin price surge from $40 to $260
 
-**Findings:** [TO BE COMPLETED]
+**Findings (90/90 day window):** [TO BE COMPLETED]
 - Median fee rate: X% increase
 - Urgency spread: Y% increase
 - Fee-to-subsidy: Z percentage points increase
 - BDD: Spike on [date], indicating dormancy break
 - Tx/day: Increased by W%
 
+**Findings (180/45 day window):** [TO BE COMPLETED]
+- Median fee rate: X% increase (immediate impact)
+- Urgency spread: Y% increase (immediate impact)
+- Fee-to-subsidy: Z percentage points increase (immediate impact)
+- BDD: Spike on [date], indicating dormancy break
+- Tx/day: Increased by W% (immediate impact)
+
 **Interpretation:**
-- Evidence of liquidity preference behavior
+- Evidence of liquidity preference behavior (both windows)
 - Fee market benefited from crisis demand
 - Miner revenue from fees increased
+- 180/45 window shows stronger immediate impact vs. 90/90 sustained effects
 
-### 5.2 Venezuela Crisis (2017)
+### 5.2 Venezuela Crisis (2016-2017)
 **Context:** Hyperinflation, currency collapse, LocalBitcoins volume surge
 
-**Findings:** [TO BE COMPLETED]
+**Findings (90/90 day window):** [TO BE COMPLETED]
 - [Similar structure to 5.1]
+
+**Findings (180/45 day window):** [TO BE COMPLETED]
+- [Similar structure to 5.1 with immediate impact focus]
 
 **Interpretation:**
 - Different from Cyprus: Prolonged crisis, peer-to-peer focus
 - [Analysis of unique patterns]
+- Comparison of immediate vs. sustained effects across window configurations
 
-### 5.3 COVID/CPI Peak (2022)
-**Context:** Inflation peak, macro uncertainty, institutional fear
+### 5.3 COVID Lockdown (2020)
+**Context:** Economic shutdown, market panic, lockdown uncertainty
 
-**Findings:** [TO BE COMPLETED]
+**Findings (90/90 day window):** [TO BE COMPLETED]
 - [Similar structure to 5.1]
+
+**Findings (180/45 day window):** [TO BE COMPLETED]
+- [Similar structure to 5.1 with immediate impact focus]
 
 **Interpretation:**
 - Post-halving context (subsidy = 6.25 BTC)
 - Fee-to-subsidy ratio more sensitive
 - [Analysis]
+- Comparison of immediate vs. sustained effects across window configurations
 
 ### 5.4 Cross-Event Comparison
-**Table:** Summary statistics for all three events
+**Table 1: 90/90 day window results**
+
+| Metric | Cyprus Δ% | Venezuela Δ% | COVID Δ% | Average |
+|--------|-----------|--------------|----------|---------|
+| Median sat/vB | ... | ... | ... | ... |
+| Urgency spread | ... | ... | ... | ... |
+| Fee-to-subsidy | ... | ... | ... | ... |
+| BDD | ... | ... | ... | ... |
+| Tx/day | ... | ... | ... | ... |
+
+**Table 2: 180/45 day window results (immediate impact)**
 
 | Metric | Cyprus Δ% | Venezuela Δ% | COVID Δ% | Average |
 |--------|-----------|--------------|----------|---------|
@@ -229,17 +260,35 @@ This work is intended for publication in Ledger journal, which timestamps public
 | Tx/day | ... | ... | ... | ... |
 
 **Patterns:**
-- Consistent increases across events?
-- Which metrics are most sensitive?
+- Consistent increases across events? (both windows)
+- Which metrics are most sensitive? (immediate vs. sustained)
 - Event-specific variations (e.g., Venezuela as extended crisis)
+- Window sensitivity: Do 180/45 results show stronger immediate effects?
 
 ### 5.5 Figures
-- **Figure 1:** Multi-panel time series for Cyprus (all metrics with shaded windows)
-- **Figure 2:** Multi-panel for Venezuela
-- **Figure 3:** Multi-panel for COVID
-- **Figure 4:** Cross-event overlay (normalized to anchor date = 100)
-- **Figure 5:** Bar charts comparing pre vs. crisis means
-- **Figure 6:** Fee-to-subsidy ratio over full Bitcoin history with halving markers
+
+**Individual Crisis Analysis (6 figures):**
+- **Figure 1:** Cyprus 90/90 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+- **Figure 2:** Cyprus 180/45 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+- **Figure 3:** Venezuela 90/90 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+- **Figure 4:** Venezuela 180/45 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+- **Figure 5:** COVID 90/90 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+- **Figure 6:** COVID 180/45 day window (4 panels: fees BTC, transactions, fee-to-subsidy, BDD)
+
+**Cross-Crisis Comparison (2 figures):**
+- **Figure 7:** 90/90 window cross-crisis overlay (4 panels: all 3 crises overlaid)
+- **Figure 8:** 180/45 window cross-crisis overlay (4 panels: all 3 crises overlaid)
+
+**Summary Analysis (2 figures):**
+- **Figure 9:** Pre vs. crisis bar charts (6 metrics × 3 crises × 2 windows = 36 bars)
+- **Figure 10:** Fee-to-subsidy ratio over full Bitcoin history (2009-2024) with halving markers
+
+**Visual Design:**
+- Dual shaded regions: Light blue (90/90), light red (180/45)
+- Vertical line: Crisis anchor date
+- 30-day rolling average for smoothing
+- Color scheme: Cyprus (blue), Venezuela (red), COVID (green)
+- BTC-native units throughout
 
 ---
 

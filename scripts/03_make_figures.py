@@ -83,47 +83,28 @@ def generate_event_figures(
     
     figure_paths = []
     
-    # TODO: Generate actual plots once metrics are implemented
-    # 
-    # # Plot each metric individually
-    # metric_columns = [col for col in merged.columns if col != 'date']
-    # 
-    # for metric_col in metric_columns:
-    #     try:
-    #         fig_path = plot_single_metric(
-    #             merged,
-    #             metric_col,
-    #             event_name,
-    #             anchor_date,
-    #             window,
-    #             figures_dir
-    #         )
-    #         figure_paths.append(fig_path)
-    #     except Exception as e:
-    #         print(f"   ⚠️  Failed to plot {metric_col}: {e}")
-    # 
-    # # Create multi-panel figure
-    # try:
-    #     metrics_dict = {
-    #         'Fee Rate': (merged[['date', 'median_sat_vb']], 'sat/vB'),
-    #         'Fees per Block': (merged[['date', 'fees_per_block_btc']], 'BTC'),
-    #         'BDD': (merged[['date', 'bdd']], 'Bitcoin-Days'),
-    #         'Transactions': (merged[['date', 'tx_per_day']], 'Tx/Day')
-    #     }
-    #     
-    #     fig_path = plot_multi_panel_event(
-    #         metrics_dict,
-    #         event_name,
-    #         anchor_date,
-    #         window,
-    #         figures_dir
-    #     )
-    #     figure_paths.append(fig_path)
-    # except Exception as e:
-    #     print(f"   ⚠️  Failed to create multi-panel: {e}")
-    
-    print("\n⚠️  Figure generation not fully implemented yet")
-    print("   Complete metric computation first, then implement plotting")
+    # Create multi-panel figure for this event
+    try:
+        # Prepare metrics for multi-panel plot
+        metrics_dict = {
+            'Fees per Block (BTC)': (merged[['date', 'fees_per_block_btc']], 'BTC'),
+            'Daily Transactions': (merged[['date', 'tx_per_day']], 'Tx/Day'),
+            'Fee-to-Subsidy Ratio': (merged[['date', 'fee_to_subsidy']], 'Ratio'),
+            'Bitcoin Days Destroyed': (merged[['date', 'bdd']], 'BDD')
+        }
+        
+        fig_path = plot_multi_panel_event(
+            metrics_dict,
+            event_name,
+            anchor_date,
+            window,
+            figures_dir
+        )
+        figure_paths.append(fig_path)
+        print(f"   ✓ Created multi-panel figure: {fig_path}")
+        
+    except Exception as e:
+        print(f"   ⚠️  Failed to create multi-panel: {e}")
     
     return figure_paths
 

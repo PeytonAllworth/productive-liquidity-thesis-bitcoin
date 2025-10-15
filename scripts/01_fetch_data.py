@@ -25,7 +25,7 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 from src.config import load_config, get_data_paths
-from src.data_sources import blockchain_com, mempool_space
+from src.data_sources import blockchain_com, mempool_space, blockchair
 
 
 def fetch_blockchain_com_data(output_dir: Path, timespan: str = "all") -> dict:
@@ -84,6 +84,32 @@ def fetch_mempool_space_data(output_dir: Path) -> dict:
         return {}
 
 
+def fetch_blockchair_data(output_dir: Path, start_date: str, end_date: str) -> dict:
+    """
+    Fetch real daily blocks data from Blockchair API.
+    
+    Args:
+        output_dir: Where to save CSVs
+        start_date: YYYY-MM-DD
+        end_date: YYYY-MM-DD
+    
+    Returns:
+        Dictionary of file paths
+    
+    Note: Blockchair provides real historical block counts, not estimates
+    """
+    print("\n" + "=" * 70)
+    print("📥 FETCHING REAL BLOCKS DATA FROM BLOCKCHAIR")
+    print("=" * 70)
+    
+    try:
+        paths = blockchair.fetch_all_metrics(output_dir, start_date, end_date)
+        return paths
+    except Exception as e:
+        print(f"\n❌ Error fetching from Blockchair: {e}")
+        return {}
+
+
 def fetch_node_rpc_data(output_dir: Path, start_date: str, end_date: str) -> dict:
     """
     Fetch data from Bitcoin Core node via RPC.
@@ -123,9 +149,9 @@ def main():
     parser.add_argument(
         '--sources',
         nargs='+',
-        choices=['blockchain_com', 'mempool_space', 'node_rpc'],
-        default=['blockchain_com'],
-        help='Data sources to fetch from (default: blockchain_com)'
+        choices=['blockchain_com', 'mempool_space', 'blockchair', 'node_rpc'],
+        default=['blockchain_com', 'blockchair'],
+        help='Data sources to fetch from (default: blockchain_com, blockchair)'
     )
     
     parser.add_argument(
@@ -170,7 +196,7 @@ def main():
     
     # Determine which sources to use
     if args.all:
-        sources = ['blockchain_com', 'mempool_space']
+        sources = ['blockchain_com', 'mempool_space', 'blockchair']
     else:
         sources = args.sources
     
@@ -193,6 +219,10 @@ def main():
             
             elif source == 'mempool_space':
                 paths = fetch_mempool_space_data(output_dir)
+                all_paths.update(paths)
+            
+            elif source == 'blockchair':
+                paths = fetch_blockchair_data(output_dir, args.start_date, args.end_date)
                 all_paths.update(paths)
             
             elif source == 'node_rpc':

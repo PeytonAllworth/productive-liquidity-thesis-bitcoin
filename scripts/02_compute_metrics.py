@@ -52,6 +52,12 @@ def compute_fee_metrics(raw_dir: Path, processed_dir: Path) -> bool:
     try:
         # Check for required files
         fees_per_block_csv = raw_dir / "blockchain_com_fees_per_block_btc.csv"
+        fees_csv = raw_dir / "blockchain_com_fees_btc_day.csv"
+        
+        # Try Blockchair blocks data first, fallback to blockchain_com
+        blocks_csv = raw_dir / "blockchair_blocks_per_day.csv"
+        if not blocks_csv.exists():
+            blocks_csv = raw_dir / "blockchain_com_blocks_per_day.csv"
         
         if not fees_per_block_csv.exists():
             print(f"❌ Required file not found: {fees_per_block_csv}")
@@ -67,10 +73,36 @@ def compute_fee_metrics(raw_dir: Path, processed_dir: Path) -> bool:
         
         if output_path:
             print(f"   ✓ Saved: {output_path}")
-            return True
         else:
-            print("   ⚠️  Fee metrics computation not fully implemented")
+            print("   ❌ Failed to compute fee-to-subsidy ratio")
             return False
+        
+        # Estimate fee rate metrics from aggregates
+        if fees_csv.exists() and blocks_csv.exists():
+            print("\n📈 Estimating fee rate metrics...")
+            from src.metrics.fee_rate_urgency import estimate_fee_rates_from_aggregates
+            from src.metrics.fees_and_fee_to_subsidy import compute_fees_per_block
+            
+            # First compute fees per block if not already done
+            if not fees_per_block_csv.exists():
+                fees_per_block_path = compute_fees_per_block(fees_csv, blocks_csv, raw_dir)
+            else:
+                fees_per_block_path = fees_per_block_csv
+            
+            # Estimate fee rates
+            fee_rate_path = estimate_fee_rates_from_aggregates(
+                fees_per_block_path,
+                raw_dir / "blockchain_com_tx_per_day.csv",
+                processed_dir
+            )
+            
+            if fee_rate_path:
+                print(f"   ✓ Saved: {fee_rate_path}")
+            else:
+                print("   ❌ Failed to estimate fee rates")
+                return False
+        
+        return True
     
     except Exception as e:
         print(f"❌ Error computing fee metrics: {e}")

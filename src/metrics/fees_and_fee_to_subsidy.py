@@ -20,7 +20,7 @@ Post-halving, this effect becomes even more critical as subsidies decline.
 """
 
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 import pandas as pd
 
 import sys
@@ -158,34 +158,27 @@ def compute_fees_per_block(
     Data Sources:
         - Blockchain.com API (see blockchain_com.py)
         - Bitcoin Core RPC (see node_rpc.py)
-    
-    TODO: Complete implementation after data collection
     """
     print(f"\n📊 Computing fees per block...")
     print(f"   Fees CSV: {fees_per_day_csv}")
     print(f"   Blocks CSV: {blocks_per_day_csv}")
     
-    # TODO: Uncomment when you have data
-    # 
-    # # Load CSVs
-    # fees_df = load_csv(fees_per_day_csv)
-    # blocks_df = load_csv(blocks_per_day_csv)
-    # 
-    # # Merge on date
-    # df = fees_df.merge(blocks_df, on='date', how='inner')
-    # 
-    # # Compute fees per block
-    # df['fees_per_block_btc'] = df['fees_btc_day'] / df['blocks_per_day']
-    # 
-    # # Save
-    # output_path = output_dir / "fees_per_block_btc.csv"
-    # save_csv(df, output_path)
-    # 
-    # print(f"   ✓ Computed fees per block for {len(df)} days")
-    # return output_path
+    # Load CSVs
+    fees_df = load_csv(fees_per_day_csv)
+    blocks_df = load_csv(blocks_per_day_csv)
     
-    print("   ⚠️  Not implemented yet - waiting for data\n")
-    return None
+    # Merge on date
+    df = fees_df.merge(blocks_df, on='date', how='inner')
+    
+    # Compute fees per block
+    df['fees_per_block_btc'] = df['fees_btc_day'] / df['blocks_per_day']
+    
+    # Save
+    output_path = output_dir / "fees_per_block_btc.csv"
+    save_csv(df, output_path)
+    
+    print(f"   ✓ Computed fees per block for {len(df)} days")
+    return output_path
 
 
 def compute_fee_to_subsidy_ratio(
@@ -211,41 +204,34 @@ def compute_fee_to_subsidy_ratio(
         - fees_per_block_btc
         - subsidy_btc (computed from height or date)
         - fee_to_subsidy (ratio)
-    
-    TODO: Complete implementation
     """
     print(f"\n📊 Computing fee-to-subsidy ratio...")
     print(f"   Input: {fees_per_block_csv}")
     
-    # TODO: Implement
-    # 
-    # df = load_csv(fees_per_block_csv)
-    # 
-    # if height_column and height_column in df.columns:
-    #     # Use exact heights
-    #     df['subsidy_btc'] = df[height_column].apply(block_subsidy)
-    # else:
-    #     # Approximate from date
-    #     # (This is less precise - prefer using actual heights)
-    #     print("   ⚠️  No height column found - using approximate subsidy")
-    #     df['approx_height'] = ((df['date'] - pd.Timestamp('2009-01-03')).dt.days * 144).astype(int)
-    #     df['subsidy_btc'] = df['approx_height'].apply(block_subsidy)
-    # 
-    # # Compute ratio
-    # df['fee_to_subsidy'] = df.apply(
-    #     lambda row: compute_fee_to_subsidy(row['fees_per_block_btc'], row['subsidy_btc']),
-    #     axis=1
-    # )
-    # 
-    # # Save
-    # output_path = output_dir / "fee_to_subsidy_daily.csv"
-    # save_csv(df, output_path)
-    # 
-    # print(f"   ✓ Computed fee-to-subsidy for {len(df)} days")
-    # return output_path
+    # Load data
+    df = load_csv(fees_per_block_csv)
     
-    print("   ⚠️  Not implemented yet\n")
-    return None
+    if height_column and height_column in df.columns:
+        # Use exact heights
+        df['subsidy_btc'] = df[height_column].apply(block_subsidy)
+    else:
+        # Approximate from date
+        print("   ⚠️  No height column found - using approximate subsidy")
+        df['approx_height'] = ((df['date'] - pd.Timestamp('2009-01-03')).dt.days * 144).astype(int)
+        df['subsidy_btc'] = df['approx_height'].apply(block_subsidy)
+    
+    # Compute ratio
+    df['fee_to_subsidy'] = df.apply(
+        lambda row: compute_fee_to_subsidy(row['fees_per_block_btc'], row['subsidy_btc']),
+        axis=1
+    )
+    
+    # Save
+    output_path = output_dir / "fee_to_subsidy_daily.csv"
+    save_csv(df, output_path)
+    
+    print(f"   ✓ Computed fee-to-subsidy for {len(df)} days")
+    return output_path
 
 
 def add_halving_indicators(df: pd.DataFrame) -> pd.DataFrame:

@@ -143,33 +143,105 @@ def load_and_compute_fee_rate_metrics(
         1. Load transaction-level CSV
         2. Compute daily median, p90, urgency spread
         3. Save to processed/ directory
-    
-    TODO: Complete implementation after data collection
     """
     print(f"\n📊 Computing fee rate & urgency metrics...")
     print(f"   Input: {input_csv}")
     
-    # TODO: Uncomment and implement when you have data
-    # 
-    # # Load data
-    # df = load_csv(input_csv)
-    # 
-    # # Compute metrics
-    # daily_metrics = compute_daily_fee_rate_metrics(
-    #     df,
-    #     date_column=date_column,
-    #     fee_rate_column=fee_rate_column
-    # )
-    # 
-    # # Save
-    # output_path = output_dir / "fee_rate_urgency_daily.csv"
-    # save_csv(daily_metrics, output_path)
-    # 
-    # print(f"   ✓ Saved {len(daily_metrics)} days of fee metrics")
-    # return output_path
+    # Load data
+    df = load_csv(input_csv)
     
-    print("   ⚠️  Not implemented yet - waiting for data source\n")
-    return None
+    # Compute metrics
+    daily_metrics = compute_daily_fee_rate_metrics(
+        df,
+        date_column=date_column,
+        fee_rate_column=fee_rate_column
+    )
+    
+    # Save
+    output_path = output_dir / "fee_rate_urgency_daily.csv"
+    save_csv(daily_metrics, output_path)
+    
+    print(f"   ✓ Saved {len(daily_metrics)} days of fee metrics")
+    return output_path
+
+
+def estimate_fee_rates_from_aggregates(
+    fees_per_block_csv: Path,
+    tx_per_day_csv: Path,
+    output_dir: Path
+) -> Path:
+    """
+    Estimate fee rate metrics from aggregate data when transaction-level data unavailable.
+    
+    This is a simplified approach that estimates median and p90 fee rates
+    based on total fees and transaction counts.
+    
+    Args:
+        fees_per_block_csv: CSV with [date, fees_per_block_btc]
+        tx_per_day_csv: CSV with [date, tx_per_day]
+        output_dir: Where to save result
+    
+    Returns:
+        Path to saved CSV
+    
+    Methodology:
+        - Assumes average transaction size of ~500 vB (typical)
+        - Estimates median fee rate from total fees / total vB
+        - Estimates p90 as 2x median (urgency premium)
+        - Computes urgency spread = p90 - median
+    
+    Limitations:
+        - Less precise than per-transaction analysis
+        - Assumes constant transaction size distribution
+        - May not capture true fee rate distribution
+    
+    Use Case:
+        - When transaction-level data unavailable
+        - For initial analysis and validation
+        - Better than no fee rate data at all
+    """
+    print(f"\n📊 Estimating fee rate metrics from aggregates...")
+    print(f"   Fees CSV: {fees_per_block_csv}")
+    print(f"   TX CSV: {tx_per_day_csv}")
+    
+    # Load data
+    fees_df = load_csv(fees_per_block_csv)
+    tx_df = load_csv(tx_per_day_csv)
+    
+    # Merge on date
+    df = fees_df.merge(tx_df, on='date', how='inner')
+    
+    # Estimate average transaction size (vB)
+    # Typical Bitcoin transaction: ~250-500 vB
+    # We'll use 400 vB as a reasonable average
+    avg_tx_size_vb = 400
+    
+    # Estimate total vB per day
+    df['total_vb_per_day'] = df['tx_per_day'] * avg_tx_size_vb
+    
+    # Estimate average fee rate (sat/vB)
+    df['avg_fee_rate_sat_vb'] = (df['fees_per_block_btc'] * 100_000_000) / df['total_vb_per_day']
+    
+    # Estimate median fee rate (assume median ≈ average for simplicity)
+    df['median_sat_vb'] = df['avg_fee_rate_sat_vb']
+    
+    # Estimate p90 fee rate (assume 2x median for urgency premium)
+    df['p90_sat_vb'] = df['median_sat_vb'] * 2.0
+    
+    # Compute urgency spread
+    df['urgency_spread_sat_vb'] = df['p90_sat_vb'] - df['median_sat_vb']
+    
+    # Keep only relevant columns
+    result_df = df[['date', 'median_sat_vb', 'p90_sat_vb', 'urgency_spread_sat_vb', 'tx_per_day']].copy()
+    
+    # Save
+    output_path = output_dir / "fee_rate_urgency_estimated.csv"
+    save_csv(result_df, output_path)
+    
+    print(f"   ✓ Estimated fee rates for {len(result_df)} days")
+    print(f"   ⚠️  Note: This is an estimation - actual fee rates may vary")
+    
+    return output_path
 
 
 # Pseudocode for alternative approach (if no transaction-level data):

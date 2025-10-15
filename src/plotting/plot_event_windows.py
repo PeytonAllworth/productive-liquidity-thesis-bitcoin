@@ -276,6 +276,126 @@ def plot_pre_vs_crisis_comparison(
     return Path(save_path)
 
 
+def plot_individual_crisis(
+    df: pd.DataFrame,
+    event_name: str,
+    anchor_date: str,
+    days_before: int,
+    days_after: int,
+    output_dir: Path,
+    title: str = None
+) -> Path:
+    """
+    Create individual crisis figure showing all data points clearly visible.
+    
+    Args:
+        df: DataFrame with all metrics and date column
+        event_name: Event identifier (e.g., 'cyprus_2013')
+        anchor_date: Crisis anchor date (YYYY-MM-DD)
+        days_before: Days before crisis to show
+        days_after: Days after crisis to show
+        output_dir: Where to save figure
+        title: Chart title (if None, auto-generates)
+    
+    Returns:
+        Path to saved figure
+    """
+    apply_plot_style()
+    
+    # Filter data to event window
+    anchor = pd.Timestamp(anchor_date)
+    start_date = anchor - pd.Timedelta(days=days_before)
+    end_date = anchor + pd.Timedelta(days=days_after)
+    
+    event_data = df[(df['date'] >= start_date) & (df['date'] <= end_date)].copy()
+    
+    if len(event_data) == 0:
+        print(f"⚠️  No data found for {event_name} in window {start_date} to {end_date}")
+        return None
+    
+    # Create figure with subplots for each metric
+    metrics = {
+        'Fees per Day (BTC)': 'fees_btc_day',
+        'Daily Transactions': 'tx_per_day', 
+        'Fee-to-Subsidy Ratio': 'fee_to_subsidy',
+        'Bitcoin Days Destroyed': 'bdd'
+    }
+    
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    axes = axes.flatten()
+    
+    # Plot each metric
+    for i, (metric_name, column) in enumerate(metrics.items()):
+        ax = axes[i]
+        
+        if column in event_data.columns:
+            # Plot data points as both line and markers for visibility
+            ax.plot(event_data['date'], event_data[column], 
+                   color=CRISIS_COLOR, linewidth=2, marker='o', 
+                   markersize=4, alpha=0.8)
+            
+            # Add vertical line at crisis anchor
+            ax.axvline(anchor, color='red', linestyle='--', linewidth=2, alpha=0.7)
+            
+            # Add shaded regions for pre-crisis and crisis periods
+            ax.axvspan(start_date, anchor, alpha=0.1, color='blue', label='Pre-crisis')
+            ax.axvspan(anchor, end_date, alpha=0.1, color='red', label='Crisis period')
+            
+            # Labels
+            ax.set_title(metric_name, fontsize=14, fontweight='bold')
+            ax.set_ylabel(metric_name, fontsize=12)
+            ax.grid(True, alpha=0.3)
+            
+            # Format x-axis
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+            ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+            plt.setp(ax.xaxis.get_majorticklabels(), rotation=45)
+            
+            # Calculate percentage change from pre-crisis to crisis period
+            pre_crisis_data = event_data[event_data['date'] < anchor]
+            crisis_data = event_data[event_data['date'] >= anchor]
+            
+            if len(pre_crisis_data) > 0 and len(crisis_data) > 0:
+                pre_mean = pre_crisis_data[column].mean()
+                crisis_mean = crisis_data[column].mean()
+                pct_change = ((crisis_mean - pre_mean) / pre_mean) * 100
+                
+                # Add percentage change annotation
+                ax.text(0.02, 0.98, f'Change: {pct_change:+.1f}%', 
+                       transform=ax.transAxes, fontsize=10, 
+                       verticalalignment='top',
+                       bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+            else:
+                # Fallback to data point count if we can't calculate change
+                ax.text(0.02, 0.98, f'Data points: {len(event_data)}', 
+                       transform=ax.transAxes, fontsize=10, 
+                       verticalalignment='top',
+                       bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+        else:
+            ax.text(0.5, 0.5, f'No data for {metric_name}', 
+                   transform=ax.transAxes, ha='center', va='center',
+                   fontsize=12, color='red')
+            ax.set_title(metric_name, fontsize=14, fontweight='bold')
+    
+    # Overall title
+    if title is None:
+        title = f"{event_name.replace('_', ' ').title()} Crisis Analysis"
+    fig.suptitle(title, fontsize=16, fontweight='bold')
+    
+    # Add legend to first subplot
+    axes[0].legend(loc='upper right', fontsize=10)
+    
+    plt.tight_layout()
+    
+    # Save
+    filename = f"fig_{event_name}_individual.png"
+    save_path = save_figure(fig, filename, output_dir)
+    
+    plt.close(fig)
+    
+    return Path(save_path)
+
+
 def plot_all_events_overlay(
     dfs_dict: dict,
     metric_column: str,
